@@ -72,7 +72,12 @@ export function UploadExcelPage() {
         });
   
         try {
-          await uploadStaffData(sheetsData); // Send structured array instead of object
+          // Flatten all sheet data into a single array of rows
+const flattenedData = sheetsData.flatMap(sheet => sheet.data as unknown[]);
+await uploadStaffData(flattenedData);
+// eslint-disable-next-line no-console
+console.log(flattenedData)
+
           toast({
             title: "Success",
             description: "Data Uploaded Successfully!",
