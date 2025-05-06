@@ -116,12 +116,12 @@ export function ContributionDashboard() {interface Contribution {
             {contribution.contributions?.[monthKey] ?? 0}
           </TableCell>
         ))}
-        <TableCell>{contribution.totalContribution}</TableCell>
-        <TableCell>{contribution.closingBalance ?? "N/A"}</TableCell>
-        <TableCell>{contribution.interestPaid ?? "N/A"}</TableCell>
-        <TableCell>{contribution.balanceAfterInterest ?? "N/A"}</TableCell>
-        <TableCell>{contribution.withdrawal ?? "N/A"}</TableCell>
-        <TableCell>{contribution.openingBalance ?? "N/A"}</TableCell>
+        {/* <TableCell>{(contribution.totalContribution).toFixed(2)}</TableCell> */}
+        <TableCell>{(contribution.closingBalance ?? 0).toFixed(2)}</TableCell>
+        <TableCell>{(contribution.interestPaid ?? 0).toFixed(2)}</TableCell>
+        <TableCell>{(contribution.balanceAfterInterest ?? 0).toFixed(2)}</TableCell>
+        <TableCell>{(contribution.withdrawal ?? 0).toFixed(2)}</TableCell>
+        <TableCell>{(contribution.openingBalance ?? 0).toFixed(2)}</TableCell>
       </TableRow>
     ))
   ) : (
