@@ -14,16 +14,21 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-export function ContributionDashboard() {
-  interface Contribution {
-    staffId: string;
-    name: string;
-    contributions: { [key: string]: number };
-    totalContribution: number;
-    topUpDeposit: number;
-    partialWithdrawal?: number;
-    balanceForTheYear?: number;
-  }
+export function ContributionDashboard() {interface Contribution {
+  staffId: string;
+  name: string;
+  contributions: { [key: string]: number };
+  totalContribution: number;
+  topUpDeposit: number;
+  partialWithdrawal?: number;
+  balanceForTheYear?: number;
+  openingBalance?: number;
+  closingBalance?: number;
+  interestPaid?: number;
+  balanceAfterInterest?: number;
+  withdrawal?: number;
+}
+
 
   const [contributions, setContributions] = useState<Contribution[]>([]);
 
@@ -32,6 +37,8 @@ export function ContributionDashboard() {
       try {
         const data = await getStaffData();
         setContributions(data);
+        // eslint-disable-next-line no-console
+        console.log("Fetched staff data:", data);
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error("Failed to fetch staff data:", error);
@@ -72,45 +79,58 @@ export function ContributionDashboard() {
         <Table>
           <TableCaption>Contribution Records for Staff</TableCaption>
           <TableHeader>
-            <TableRow>
-              <TableHead>Staff ID</TableHead>
-              <TableHead>Staff Name</TableHead>
-              {[
-                "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-              ].map((month) => (
-                <TableHead key={month}>{month}</TableHead>
-              ))}
-              <TableHead>Total Contribution</TableHead>
-              <TableHead>Deposit - Top Up</TableHead>
-              <TableHead>Partial Withdrawal</TableHead>
-              <TableHead>Balance</TableHead>
-            </TableRow>
+          <TableRow>
+  <TableHead>Staff ID</TableHead>
+  <TableHead>Staff Name</TableHead>
+  <TableHead>Opening Balance</TableHead>
+  {[
+  "Apr", "May", "Jun", "Jul", "Aug",
+  "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar"
+]
+
+.map((month) => (
+    <TableHead key={month}>{month}</TableHead>
+  ))}
+  <TableHead>Total</TableHead>
+  <TableHead>Closing Balance</TableHead>
+  <TableHead>Interest Paid</TableHead>
+  <TableHead>Balance After Interest</TableHead>
+  <TableHead>Withdrawal</TableHead>
+  <TableHead>Opening Balance</TableHead>
+</TableRow>
+
           </TableHeader>
           <TableBody>
-            {filteredContributions.length > 0 ? (
-              filteredContributions.map((contribution, index) => (
-                <TableRow key={index}>
-                  <TableCell>{contribution.staffId}</TableCell>
-                  <TableCell>{contribution.name}</TableCell>
-                  {[
-                    "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE",
-                    "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"
-                  ].map((month, i) => (
-                    <TableCell key={i}>{contribution.contributions[month] || 0}</TableCell>
-                  ))}
-                  <TableCell>{contribution.totalContribution}</TableCell>
-                  <TableCell>{contribution.topUpDeposit}</TableCell>
-                  <TableCell>{contribution.partialWithdrawal || "N/A"}</TableCell>
-                  <TableCell>{contribution.balanceForTheYear || "N/A"}</TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={18} className="text-center">No records found</TableCell>
-              </TableRow>
-            )}
-          </TableBody>
+  {filteredContributions.length > 0 ? (
+    filteredContributions.map((contribution, index) => (
+      <TableRow key={index}>
+        <TableCell>{contribution.staffId}</TableCell>
+        <TableCell>{contribution.name}</TableCell>
+        <TableCell>{contribution.openingBalance ?? "N/A"}</TableCell>
+        {[
+  "24-Apr", "24-May", "24-Jun", "24-Jul", "24-Aug",
+  "24-Sep", "24-Oct", "24-Nov", "24-Dec", "24-Jan", "24-Feb", "24-Mar"
+]
+.map((monthKey, i) => (
+          <TableCell key={i}>
+            {contribution.contributions?.[monthKey] ?? 0}
+          </TableCell>
+        ))}
+        <TableCell>{contribution.totalContribution}</TableCell>
+        <TableCell>{contribution.closingBalance ?? "N/A"}</TableCell>
+        <TableCell>{contribution.interestPaid ?? "N/A"}</TableCell>
+        <TableCell>{contribution.balanceAfterInterest ?? "N/A"}</TableCell>
+        <TableCell>{contribution.withdrawal ?? "N/A"}</TableCell>
+        <TableCell>{contribution.openingBalance ?? "N/A"}</TableCell>
+      </TableRow>
+    ))
+  ) : (
+    <TableRow>
+      <TableCell colSpan={18} className="text-center">No records found</TableCell>
+    </TableRow>
+  )}
+</TableBody>
+
         </Table>
       </Main>
     </>
