@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/table";
 
 export function ContributionDashboard() {interface Contribution {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [x: string]: any;
   staffId: string;
   name: string;
   contributions: { [key: string]: number };
@@ -82,7 +84,6 @@ export function ContributionDashboard() {interface Contribution {
           <TableRow>
   <TableHead>Staff ID</TableHead>
   <TableHead>Staff Name</TableHead>
-  <TableHead>Opening Balance</TableHead>
   {[
   "Apr", "May", "Jun", "Jul", "Aug",
   "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar"
@@ -91,12 +92,12 @@ export function ContributionDashboard() {interface Contribution {
 .map((month) => (
     <TableHead key={month}>{month}</TableHead>
   ))}
+    <TableHead>Opening Balance</TableHead>
   <TableHead>Total</TableHead>
   <TableHead>Closing Balance</TableHead>
   <TableHead>Interest Paid</TableHead>
   <TableHead>Balance After Interest</TableHead>
-  <TableHead>Withdrawal</TableHead>
-  <TableHead>Opening Balance</TableHead>
+  <TableHead>Withdrawn</TableHead>
 </TableRow>
 
           </TableHeader>
@@ -105,23 +106,23 @@ export function ContributionDashboard() {interface Contribution {
     filteredContributions.map((contribution, index) => (
       <TableRow key={index}>
         <TableCell>{contribution.staffId}</TableCell>
-        <TableCell>{contribution.name}</TableCell>
-        <TableCell>{contribution.openingBalance ?? "N/A"}</TableCell>
+        <TableCell>{contribution.name}</TableCell>       
+ 
         {[
-  "24-Apr", "24-May", "24-Jun", "24-Jul", "24-Aug",
-  "24-Sep", "24-Oct", "24-Nov", "24-Dec", "24-Jan", "24-Feb", "24-Mar"
-]
-.map((monthKey, i) => (
+          "24-Apr", "24-May", "24-Jun", "24-Jul", "24-Aug",
+          "24-Sep", "24-Oct", "24-Nov", "24-Dec", "24-Jan", "24-Feb", "24-Mar"
+        ].map((monthKey, i) => (
           <TableCell key={i}>
-            {contribution.contributions?.[monthKey] ?? 0}
+            {(contribution.monthly?.[monthKey] ?? 0).toFixed(2)}
           </TableCell>
         ))}
-        {/* <TableCell>{(contribution.totalContribution).toFixed(2)}</TableCell> */}
+                <TableCell>{(contribution.openingBalance ?? 0).toFixed(2)}</TableCell>
+
+        <TableCell>{(contribution.totalContribution ?? 0).toFixed(2)}</TableCell>
         <TableCell>{(contribution.closingBalance ?? 0).toFixed(2)}</TableCell>
         <TableCell>{(contribution.interestPaid ?? 0).toFixed(2)}</TableCell>
         <TableCell>{(contribution.balanceAfterInterest ?? 0).toFixed(2)}</TableCell>
         <TableCell>{(contribution.withdrawal ?? 0).toFixed(2)}</TableCell>
-        <TableCell>{(contribution.openingBalance ?? 0).toFixed(2)}</TableCell>
       </TableRow>
     ))
   ) : (
