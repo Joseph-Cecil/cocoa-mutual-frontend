@@ -13,6 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function ContributionDashboard() {interface Contribution {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -30,6 +31,44 @@ export function ContributionDashboard() {interface Contribution {
   balanceAfterInterest?: number;
   withdrawal?: number;
 }
+
+
+function SkeletonLoader() {
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Staff ID</TableHead>
+          <TableHead>Staff Name</TableHead>
+          {[
+            "Apr", "May", "Jun", "Jul", "Aug",
+            "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar"
+          ].map((month) => (
+            <TableHead key={month}>{month}</TableHead>
+          ))}
+          <TableHead>Opening Balance</TableHead>
+          <TableHead>Total</TableHead>
+          <TableHead>Closing Balance</TableHead>
+          <TableHead>Interest Paid</TableHead>
+          <TableHead>Balance After Interest</TableHead>
+          <TableHead>Withdrawal</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {Array.from({ length: 15 }).map((_, index) => (
+          <TableRow key={index}>
+            {Array.from({ length: 21 }).map((_, colIndex) => (
+              <TableCell key={colIndex}>
+                <Skeleton className="h-4 w-full rounded" />
+              </TableCell>
+            ))}
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+}
+
 
 
   const [contributions, setContributions] = useState<Contribution[]>([]);
@@ -75,65 +114,57 @@ export function ContributionDashboard() {interface Contribution {
       </Header>
 
       <Main>
-        <div className="mb-7 -mt-3 flex flex-col items-start space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-          <h1 className="text-xl font-bold tracking-tight sm:text-2xl">Staff Contributions</h1>
-        </div>
-        <Table>
-          <TableCaption>Contribution Records for Staff</TableCaption>
-          <TableHeader>
-          <TableRow>
-  <TableHead>Staff ID</TableHead>
-  <TableHead>Staff Name</TableHead>
-  {[
-  "Apr", "May", "Jun", "Jul", "Aug",
-  "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar"
-]
-
-.map((month) => (
-    <TableHead key={month}>{month}</TableHead>
-  ))}
-    <TableHead>Opening Balance</TableHead>
-  <TableHead>Total</TableHead>
-  <TableHead>Closing Balance</TableHead>
-  <TableHead>Interest Paid</TableHead>
-  <TableHead>Balance After Interest</TableHead>
-  <TableHead>Withdrawn</TableHead>
-</TableRow>
-
-          </TableHeader>
-          <TableBody>
-  {filteredContributions.length > 0 ? (
-    filteredContributions.map((contribution, index) => (
-      <TableRow key={index}>
-        <TableCell>{contribution.staffId}</TableCell>
-        <TableCell>{contribution.name}</TableCell>       
- 
-        {[
-          "24-Apr", "24-May", "24-Jun", "24-Jul", "24-Aug",
-          "24-Sep", "24-Oct", "24-Nov", "24-Dec", "24-Jan", "24-Feb", "24-Mar"
-        ].map((monthKey, i) => (
-          <TableCell key={i}>
-            {(contribution.monthly?.[monthKey] ?? 0).toFixed(2)}
-          </TableCell>
-        ))}
-                <TableCell>{(contribution.openingBalance ?? 0).toFixed(2)}</TableCell>
-
-        <TableCell>{(contribution.totalContribution ?? 0).toFixed(2)}</TableCell>
-        <TableCell>{(contribution.closingBalance ?? 0).toFixed(2)}</TableCell>
-        <TableCell>{(contribution.interestPaid ?? 0).toFixed(2)}</TableCell>
-        <TableCell>{(contribution.balanceAfterInterest ?? 0).toFixed(2)}</TableCell>
-        <TableCell>{(contribution.withdrawal ?? 0).toFixed(2)}</TableCell>
-      </TableRow>
-    ))
+  <div className="mb-7 -mt-3 flex flex-col items-start space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+    <h1 className="text-xl font-bold tracking-tight sm:text-2xl">Staff Contributions</h1>
+  </div>
+  {contributions.length === 0 ? (
+    <SkeletonLoader />
   ) : (
-    <TableRow>
-      <TableCell colSpan={18} className="text-center">No records found</TableCell>
-    </TableRow>
+    <Table>
+      <TableCaption>Contribution Records for Staff</TableCaption>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Staff ID</TableHead>
+          <TableHead>Staff Name</TableHead>
+          {[
+            "Apr", "May", "Jun", "Jul", "Aug",
+            "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar"
+          ].map((month) => (
+            <TableHead key={month}>{month}</TableHead>
+          ))}
+          <TableHead>Opening Balance</TableHead>
+          <TableHead>Total</TableHead>
+          <TableHead>Closing Balance</TableHead>
+          <TableHead>Interest Paid</TableHead>
+          <TableHead>Balance After Interest</TableHead>
+          <TableHead>Withdrawal</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {filteredContributions.map((contribution, index) => (
+          <TableRow key={index}>
+            <TableCell>{contribution.staffId}</TableCell>
+            <TableCell>{contribution.name}</TableCell>
+                        {[
+              "24-Apr", "24-May", "24-Jun", "24-Jul", "24-Aug",
+              "24-Sep", "24-Oct", "24-Nov", "24-Dec", "24-Jan", "24-Feb", "24-Mar"
+            ].map((monthKey, i) => (
+              <TableCell key={i}>
+                {contribution.contributions?.[monthKey] ?? 0}
+              </TableCell>
+            ))}
+            <TableCell>{(contribution.openingBalance ?? 0).toFixed(2)}</TableCell>
+            <TableCell>{(contribution.closingBalance ?? 0).toFixed(2)}</TableCell>
+            <TableCell>{(contribution.interestPaid ?? 0).toFixed(2)}</TableCell>
+            <TableCell>{(contribution.balanceAfterInterest ?? 0).toFixed(2)}</TableCell>
+            <TableCell>{(contribution.withdrawal ?? 0).toFixed(2)}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   )}
-</TableBody>
+</Main>
 
-        </Table>
-      </Main>
     </>
   );
 }
