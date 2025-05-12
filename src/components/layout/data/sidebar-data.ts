@@ -1,13 +1,11 @@
 import {
-  IconCalendar,
   IconCashBanknote,
-  IconChartArea,
-  IconChecklist,
+  // IconChartArea,
+  // IconChecklist,
   IconLayoutDashboard,
   IconManualGearbox,
   IconReportAnalytics,
   IconSettings,
-  IconShoppingBagDiscount,
   IconTool,
   IconUpload,
   IconUserCog,
@@ -23,8 +21,8 @@ export const sidebarData: SidebarData = {
   },
   teams: [
     {
-      name: 'Welfare Portal',
-      plan: 'Organizational Welfare Portal',
+      name: 'Cocoa Mutual',
+      plan: 'CHED Cocoa Mutual Web Application',
     },
   ],
   navGroups: [
@@ -40,11 +38,6 @@ export const sidebarData: SidebarData = {
           title: 'Report',
           url: '/report',
           icon: IconReportAnalytics,
-        },
-        {
-          title: 'Track Loan',
-          url: '/track-loan',
-          icon: IconChecklist,
         },
       ],
     },
@@ -71,11 +64,11 @@ export const sidebarData: SidebarData = {
               url: '/contribution-dashboard',
               icon: IconCashBanknote,
             },
-            {
-              title: 'Analytics',
-              url: '/admin-dashboard',
-              icon: IconChartArea,
-            }
+            // {
+            //   title: 'Analytics',
+            //   url: '/admin-dashboard',
+            //   icon: IconChartArea,
+            // }
         
           ],
         },
