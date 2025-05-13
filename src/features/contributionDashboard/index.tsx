@@ -117,9 +117,10 @@ function SkeletonLoader() {
   <div className="mb-7 -mt-3 flex flex-col items-start space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
     <h1 className="text-xl font-bold tracking-tight sm:text-2xl">Staff Contributions</h1>
   </div>
+  
   {contributions.length === 0 ? (
     <SkeletonLoader />
-  ) : (
+  ) : (<>
     <Table>
       <TableCaption>Contribution Records for Staff</TableCaption>
       <TableHeader>
@@ -150,7 +151,7 @@ function SkeletonLoader() {
               "24-Sep", "24-Oct", "24-Nov", "24-Dec", "24-Jan", "24-Feb", "24-Mar"
             ].map((monthKey, i) => (
               <TableCell key={i}>
-                {contribution.contributions?.[monthKey] ?? 0}
+                {(contribution.monthly?.[monthKey] ?? 0).toFixed(2)}
               </TableCell>
             ))}
             <TableCell>{(contribution.openingBalance ?? 0).toFixed(2)}</TableCell>
@@ -162,6 +163,7 @@ function SkeletonLoader() {
         ))}
       </TableBody>
     </Table>
+    </>
   )}
 </Main>
 

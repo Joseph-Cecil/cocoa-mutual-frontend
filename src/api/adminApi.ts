@@ -61,6 +61,8 @@ export const deleteUser = async (userId: string | number) => {
 export const getStaffData = async () => {
   try {
     const response = await apiClient.get("http://localhost:5000/api/admin/get-staff-data");
+    console.log("Contribution Data:", response.data);
+
     return response.data;
   } catch (error) {
     // eslint-disable-next-line no-console
