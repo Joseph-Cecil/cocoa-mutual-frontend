@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
@@ -14,11 +13,15 @@ import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { Overview } from './components/overview'
-import { RecentSales } from './components/transaction-history'
 import { useNavigate } from '@tanstack/react-router'
 import { fetchStaffData, getInterest } from '@/api/userApi'
 import { fetchUserProfile } from '@/api/userApi'
+import { MonthlySavingsChart } from './components/lineChartforSavings'
+import { SavingsGrowthChart } from './components/savingsGrowthOverTime'
+import { SavingsProjectionChart } from './components/savingsProjectionsNY'
+import { YearlySummaryChart } from './components/yearlySummaryChart'
+import { ContributionAnalysisChart } from './components/contributionAnalysisChart'
+import { CumulativeSavingsProjection } from './components/cumulativeSavingsProjection'
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -36,7 +39,7 @@ export default function Dashboard() {
         const data = await fetchStaffData();
 
         if (data && data.contributions) {
-          const total = data.totalContribution;
+          const total = data.contribution.total;
           setTotalContributions(total);
           setTotalBalance(data.balanceForTheYear || 0)
           setPartialWithdrawal(total * 0.5);
@@ -101,7 +104,7 @@ export default function Dashboard() {
             </TabsList>
           </div>
           <TabsContent value='overview' className='space-y-4'>
-            <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-5'>
+            <div className='grid gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-5'>
 
               {/* Total Contributions */}
               <Card>
@@ -117,7 +120,7 @@ export default function Dashboard() {
               {/* Partial Withdrawal */}
               <Card>
                 <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                  <CardTitle className='text-sm font-medium'># Partial Withdrawal</CardTitle>
+                  <CardTitle className='text-sm font-medium'># Withdrawal</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className='text-2xl font-bold'>₵{partialWithdrawal.toFixed(2)}</div>
@@ -164,25 +167,21 @@ export default function Dashboard() {
             </div>
 
             {/* Monthly Contributions & Transaction History */}
-            <div className='grid grid-cols-1 gap-4 lg:grid-cols-7'>
-              <Card className='col-span-1 lg:col-span-4'>
-                <CardHeader>
-                  <CardTitle>Monthly Contributions</CardTitle>
-                </CardHeader>
-                <CardContent className='pl-2'>
-                  <Overview />
-                </CardContent>
-              </Card>
-              <Card className='col-span-1 lg:col-span-3'>
-                <CardHeader>
-                  <CardTitle>Transaction History</CardTitle>
-                  <CardDescription>History of every deposit you have made</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <RecentSales />
-                </CardContent>
-              </Card>
+            <div className='grid grid-cols-1 gap-4 lg:grid-cols-3'>
+             <MonthlySavingsChart/>
+              <SavingsGrowthChart/>
+              <SavingsProjectionChart/>
             </div>
+
+            <div className='grid grid-cols-1 gap-4 lg:grid-cols-2'>
+              <YearlySummaryChart/>
+              <ContributionAnalysisChart/>
+            </div>
+
+            <div className='grid grid-cols-1'>
+              <CumulativeSavingsProjection/>
+            </div>
+            
           </TabsContent>
         </Tabs>
       </Main>
