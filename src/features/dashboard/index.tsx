@@ -14,7 +14,7 @@ import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { useNavigate } from '@tanstack/react-router'
-import { fetchStaffData, getInterest } from '@/api/userApi'
+import { fetchStaffData} from '@/api/userApi'
 import { fetchUserProfile } from '@/api/userApi'
 import { MonthlySavingsChart } from './components/lineChartforSavings'
 import { SavingsGrowthChart } from './components/savingsGrowthOverTime'
@@ -25,11 +25,11 @@ import { CumulativeSavingsProjection } from './components/cumulativeSavingsProje
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const [totalContributions, setTotalContributions] = useState(0);
-  const [partialWithdrawal, setPartialWithdrawal] = useState(0);
-  const [depositTopUp, setDepositTopUp] = useState(0);
-  const [totalBalance, setTotalBalance] = useState(0);
-  const [interestRate, setInterestRate] = useState<number | null>(null); 
+  const [total, setTotal] = useState(0);
+  const [withdrawal, setWithdrawal] = useState(0);
+  const [carryForwardBalance, setCarryForwardBalance] = useState(0);
+  const [balanceAfterInterest, setBalanceAfterInterest] = useState(0);
+  const [interestPaid, setInterestPaid] = useState<number | null>(null); 
   const [isAdmin, setIsAdmin] = useState(false);
 
 
@@ -38,12 +38,15 @@ export default function Dashboard() {
       try {
         const data = await fetchStaffData();
 
-        if (data && data.contributions) {
-          const total = data.contribution.total;
-          setTotalContributions(total);
-          setTotalBalance(data.balanceForTheYear || 0)
-          setPartialWithdrawal(total * 0.5);
-          setDepositTopUp(data.topUpDeposit || 0)
+        console.log(data)
+
+        if (data) {
+          const total = data.total;
+          setTotal(total);
+          setCarryForwardBalance(data.carryForwardBalance || 0)
+          setWithdrawal(data.withdrawal);
+          setBalanceAfterInterest(data.balanceAfterInterest || 0)
+          setInterestPaid(data.interestPaid)
         }
       } catch (error) {
         console.error('Error fetching staff data:', error);
@@ -51,16 +54,16 @@ export default function Dashboard() {
     };
 
     // Fetch the interest rate
-    const fetchInterestRate = async () => {
-      try {
-        const interestData = await getInterest(); // Fetch interest rate
-        if (interestData && interestData.interest) {
-          setInterestRate(interestData.interest); // Update state
-        }
-      } catch (error) {
-        console.error('Error fetching interest rate:', error);
-      }
-    };
+    // const fetchInterestRate = async () => {
+    //   try {
+    //     const interestData = await getInterest(); // Fetch interest rate
+    //     if (interestData && interestData.interest) {
+    //       setInterestPaid(); // Update state
+    //     }
+    //   } catch (error) {
+    //     console.error('Error fetching interest rate:', error);
+    //   }
+    // };
 
     const fetchProfile = async () => {
       try {
@@ -74,7 +77,7 @@ export default function Dashboard() {
     };
     fetchProfile();
     fetchData();
-    fetchInterestRate(); // Fetch interest rate on mount
+    // fetchInterestRate(); // Fetch interest rate on mount
   }, []);
 
   return (
@@ -112,7 +115,7 @@ export default function Dashboard() {
                   <CardTitle className='text-sm font-medium'># Total Contributions</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className='text-2xl font-bold'>₵{totalContributions.toFixed(2)}</div>
+                  <div className='text-2xl font-bold'>₵{total.toFixed(2)}</div>
                   <p className='text-xs text-muted-foreground'>Yearly Total Contribution.</p>
                 </CardContent>
               </Card>
@@ -123,44 +126,44 @@ export default function Dashboard() {
                   <CardTitle className='text-sm font-medium'># Withdrawal</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className='text-2xl font-bold'>₵{partialWithdrawal.toFixed(2)}</div>
-                  <p className='text-xs text-muted-foreground'>50% of Total Contributions</p>
+                  <div className='text-2xl font-bold'>₵{withdrawal.toFixed(2)}</div>
+                  <p className='text-xs text-muted-foreground'>A Total Of Your Withdrawals</p>
                 </CardContent>
               </Card>
 
               
               <Card>
                 <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                  <CardTitle className='text-sm font-medium'># Total Balance</CardTitle>
+                  <CardTitle className='text-sm font-medium'># Carry Forward Balance</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className='text-2xl font-bold'>₵{totalBalance.toFixed(2)}</div>
-                  <p className='text-xs text-muted-foreground'>Total Amount Contributed</p>
+                  <div className='text-2xl font-bold'>₵{carryForwardBalance.toFixed(2)}</div>
+                  <p className='text-xs text-muted-foreground'>Your Balance From The Previous Year</p>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                  <CardTitle className='text-sm font-medium'># Deposit Top Up</CardTitle>
+                  <CardTitle className='text-sm font-medium'># Balance After Interest</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className='text-2xl font-bold'>
-                  ₵{depositTopUp !== null ? `${depositTopUp.toFixed(2)}` : 'Loading...'}
+                  ₵{balanceAfterInterest !== null ? `${balanceAfterInterest.toFixed(2)}` : 'Loading...'}
                   </div>
-                  <p className='text-xs text-muted-foreground'>Deposit Top Up</p>
+                  <p className='text-xs text-muted-foreground'>Addition Of Your Balance And Your Interest</p>
                 </CardContent>
               </Card>
 
               {/* Interest Rate */}
               <Card>
                 <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                  <CardTitle className='text-sm font-medium'># Interest Rate</CardTitle>
+                  <CardTitle className='text-sm font-medium'># Interest Paid</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className='text-2xl font-bold'>
-                    {interestRate !== null ? `${interestRate}%` : 'Loading...'}
+                    {interestPaid !== null ? `₵${interestPaid}` : 'Loading...'}
                   </div>
-                  <p className='text-xs text-muted-foreground'>Current Interest Rate</p>
+                  <p className='text-xs text-muted-foreground'>Interest Paid</p>
                 </CardContent>
               </Card>
 

@@ -41,8 +41,8 @@ function SkeletonLoader() {
           <TableHead>Staff ID</TableHead>
           <TableHead>Staff Name</TableHead>
           {[
-            "Apr", "May", "Jun", "Jul", "Aug",
-            "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar"
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
+            "Sep", "Oct", "Nov", "Dec"
           ].map((month) => (
             <TableHead key={month}>{month}</TableHead>
           ))}
@@ -128,8 +128,8 @@ function SkeletonLoader() {
           <TableHead>Staff ID</TableHead>
           <TableHead>Staff Name</TableHead>
           {[
-            "Apr", "May", "Jun", "Jul", "Aug",
-            "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar"
+             "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
+            "Sep", "Oct", "Nov", "Dec",
           ].map((month) => (
             <TableHead key={month}>{month}</TableHead>
           ))}
@@ -147,18 +147,20 @@ function SkeletonLoader() {
             <TableCell>{contribution.staffId}</TableCell>
             <TableCell>{contribution.name}</TableCell>
             {[
-              "24-Apr", "24-May", "24-Jun", "24-Jul", "24-Aug",
-              "24-Sep", "24-Oct", "24-Nov", "24-Dec", "24-Jan", "24-Feb", "24-Mar"
+              "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
+              "Sep", "Oct", "Nov", "Dec", 
             ].map((monthKey, i) => (
               <TableCell key={i}>
                 {(contribution.monthly?.[monthKey] ?? 0).toFixed(2)}
               </TableCell>
             ))}
             <TableCell>{(contribution.openingBalance ?? 0).toFixed(2)}</TableCell>
+            <TableCell>{(contribution.total ?? 0).toFixed(2)}</TableCell>
             <TableCell>{(contribution.closingBalance ?? 0).toFixed(2)}</TableCell>
             <TableCell>{(contribution.interestPaid ?? 0).toFixed(2)}</TableCell>
             <TableCell>{(contribution.balanceAfterInterest ?? 0).toFixed(2)}</TableCell>
             <TableCell>{(contribution.withdrawal ?? 0).toFixed(2)}</TableCell>
+
           </TableRow>
         ))}
       </TableBody>
