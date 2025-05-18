@@ -2,17 +2,14 @@ import { z } from 'zod'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { IconPencil, IconSend } from '@tabler/icons-react'
+import { IconSend } from '@tabler/icons-react'
 import { toast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
-  DialogHeader,
-  DialogTitle,
 } from '@/components/ui/dialog'
 import {
   Form,
@@ -80,14 +77,6 @@ export function UsersInviteDialog({ open, onOpenChange }: Props) {
       }}
     >
       <DialogContent className='sm:max-w-md'>
-        <DialogHeader className='text-left'>
-          <DialogTitle className='flex items-center gap-2'>
-            <IconPencil /> Set Interest
-          </DialogTitle>
-          <DialogDescription>
-            Set Interest Rate For All Staff Here.
-          </DialogDescription>
-        </DialogHeader>
 
         <Form {...form}>
           <form

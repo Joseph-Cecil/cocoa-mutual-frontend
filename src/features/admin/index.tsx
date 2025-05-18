@@ -11,7 +11,8 @@ import { UsersTable } from "./components/users-table";
 import UsersProvider from "./context/users-context";
 import { userListSchema, User } from "./data/schema";
 import { getAllUsers } from "../../api/adminApi";
-import { UsersTableSkeleton } from "./components/TableSkeleton";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Admin() {
   const [users, setUsers] = useState<User[]>([]); // Store users in state
@@ -40,9 +41,39 @@ export default function Admin() {
   }, []); // Empty dependency array ensures it runs only once
 
   if (loading) return (
-    <div>
-      <UsersTableSkeleton columns={9}/>
-    </div>
+   
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Staff ID</TableHead>
+          <TableHead>Staff Name</TableHead>
+          {[
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
+            "Sep", "Oct", "Nov", "Dec"
+          ].map((month) => (
+            <TableHead key={month}>{month}</TableHead>
+          ))}
+          <TableHead>Opening Balance</TableHead>
+          <TableHead>Total</TableHead>
+          <TableHead>Closing Balance</TableHead>
+          <TableHead>Interest Paid</TableHead>
+          <TableHead>Balance After Interest</TableHead>
+          <TableHead>Withdrawal</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {Array.from({ length: 15 }).map((_, index) => (
+          <TableRow key={index}>
+            {Array.from({ length: 21 }).map((_, colIndex) => (
+              <TableCell key={colIndex}>
+                <Skeleton className="h-4 w-full rounded" />
+              </TableCell>
+            ))}
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  
   );
   if (error) return <p className="text-red-500">{error}</p>;
 

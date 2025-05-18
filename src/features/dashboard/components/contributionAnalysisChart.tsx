@@ -53,9 +53,9 @@ export function ContributionAnalysisChart() {
 
         const formattedData = [
           { category: "Opening Balance", amount: data.openingBalance, fill: "#4CAF50" },
-          { category: "Total Contributions", amount: data.totalContributions, fill: "#FF9800" },
-          { category: "Interest Paid", amount: data.totalInterest, fill: "#F44336" },
-          { category: "Withdrawals", amount: data.totalWithdrawals, fill: "#4CAF50" },
+          { category: "Total Contributions", amount: data.total, fill: "#FF9800" },
+          { category: "Interest Paid", amount: data.interestPaid, fill: "#F44336" },
+          { category: "Withdrawals", amount: data.withdrawal, fill: "#4CAF50" },
           { category: "Balance After Interest", amount: data.carryForwardBalance, fill: "#2196F3" },
         ]
 
@@ -73,8 +73,11 @@ export function ContributionAnalysisChart() {
     <Card>
       <CardHeader>
         <CardTitle>Contribution Analysis (Bar Chart)</CardTitle>
-        <CardDescription>Comparing different aspects of financials</CardDescription>
-      </CardHeader>
+<CardDescription>
+          This bar chart provides a side-by-side comparison of different financial aspects including 
+          Opening Balance, Total Contributions, Interest Paid, Withdrawals, and Balance After Interest.
+          It helps you easily visualize the distribution and impact of each category on your overall financial status.
+        </CardDescription>      </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
           <BarChart

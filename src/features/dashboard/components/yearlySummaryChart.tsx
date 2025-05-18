@@ -45,8 +45,8 @@ export function YearlySummaryChart() {
     const fetchData = async () => {
       try {
         const data = await fetchStaffData()
-        const totalContributions = data.totalContributions || 0
-        const totalInterest = data.totalInterest || 0
+        const totalContributions = data.total || 0
+        const totalInterest = data.interestPaid || 0
         const withdrawals = data.withdrawal || 0
         const carryForwardBalance = data.carryForwardBalance || 0
 
@@ -71,8 +71,10 @@ export function YearlySummaryChart() {
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
         <CardTitle>Pie Chart - Yearly Summary</CardTitle>
-        <CardDescription>Visual breakdown of money distribution for 2025</CardDescription>
-      </CardHeader>
+<CardDescription>
+This pie chart offers a snapshot of your financial activities in 2025, showing the breakdown of contributions, interest earned, withdrawals, and the remaining balance carried forward to the next year. It helps you see where most of your financial movements took place and provides insight into your savings strategy.
+
+        </CardDescription>      </CardHeader>
       <CardContent className="flex-1 mt-10 pb-0">
         {chartData.length > 0 ? (
           <ChartContainer

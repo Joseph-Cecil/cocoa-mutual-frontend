@@ -66,8 +66,11 @@ export function CumulativeSavingsProjection() {
     <Card>
       <CardHeader>
         <CardTitle>Cumulative Savings Projection (Area Chart)</CardTitle>
-        <CardDescription>Displays how savings accumulate throughout the year</CardDescription>
-      </CardHeader>
+<CardDescription>
+          This chart represents how your savings grow throughout the year. The shaded area shows the
+          total balance over time, starting from your opening balance, adding monthly contributions,
+          and including any interest earned. The final point displays your balance after interest for the year.
+        </CardDescription>      </CardHeader>
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
         <ChartContainer config={chartConfig} className="aspect-auto h-[250px] w-full">
           <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
