@@ -7,7 +7,7 @@ import { AppSidebar } from '@/components/layout/app-sidebar'
 import SkipToMain from '@/components/skip-to-main'
 
 function isAuthenticated(): boolean {
-  const token = localStorage.getItem('jwtToken')
+  const token = localStorage.getItem('token')
   return Boolean(token)
 }
 
