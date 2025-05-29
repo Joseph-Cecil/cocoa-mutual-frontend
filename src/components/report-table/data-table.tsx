@@ -1,13 +1,54 @@
 import { useState, useEffect, useRef } from "react";
 import { getCoreRowModel, getPaginationRowModel, PaginationState, useReactTable } from "@tanstack/react-table";
-import { staticData } from "./data"; // Import static data from `data.ts`
 import DataTableSearch, { FilterType } from "./data-table-search";
 import { BasicDataTable } from "./basic-data-table";
+import { getStaffData } from "../../api/adminApi";
 import { columns } from "./columns";
+import { DatabaseSchema } from "types/report";
+import { fetchStaffData } from "@/api/userApi";
+
+const monthMap: Record<string, string> = {
+  Jan: "01",
+  Feb: "02",
+  Mar: "03",
+  Apr: "04",
+  May: "05",
+  Jun: "06",
+  Jul: "07",
+  Aug: "08",
+  Sep: "09",
+  Oct: "10",
+  Nov: "11",
+  Dec: "12",
+};
+
+function transformApiDataToTableRows(apiData: any): DatabaseSchema[] {
+  const {
+    staffId,
+    monthly,
+    interestPaid,
+    withdrawal,
+    balanceAfterInterest,
+    year,
+  } = apiData;
+
+  if (!monthly || typeof monthly !== "object") return [];
+
+  return Object.entries(monthly).map(([month, amount], index) => ({
+    id: `${staffId}-${month}`,
+    userId: String(staffId),
+    date: `${year}-${monthMap[month] ?? "01"}-01`,
+    description: `Monthly contribution for ${month}`,
+    monthly: typeof amount === "number" ? amount : 0,
+    interestPaid: index === 11 ? interestPaid ?? 0 : 0,
+    withdrawal: index === 11 ? withdrawal ?? 0 : 0,
+    balanceAfterInterest: index === 11 ? balanceAfterInterest ?? 0 : 0,
+  }));
+}
 
 export function DataTable() {
-  const [tableData, setTableData] = useState(staticData); // Initialize with static data
-  const [rowCount, setRowCount] = useState(staticData.length); // Total rows from static data
+  const [tableData, setTableData] = useState<DatabaseSchema[]>([]);
+  const [rowCount, setRowCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false); // Loading state for future enhancements
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -18,45 +59,53 @@ export function DataTable() {
   // Ref to access the table's print functionality
   const printRef = useRef<HTMLTableElement>(null);
 
-  useEffect(() => {
-    // Simulate fetching static data (could be replaced with actual API fetch if needed)
+useEffect(() => {
+  const fetchData = async () => {
     setIsLoading(true);
-    setTimeout(() => {
-      setTableData(staticData); // Set data from static source
-      setRowCount(staticData.length); // Update row count
+    try {
+      const data = await fetchStaffData(); // your actual API call
+      const transformedData = transformApiDataToTableRows(data);
+      setTableData(transformedData);
+      setRowCount(transformedData.length);
+    } catch (error) {
+      console.error("Failed to fetch staff data:", error);
+    } finally {
       setIsLoading(false);
-    }, 500); // Simulated delay
-  }, []);
-
-  // Filter static data locally
-  const handleFiltersChange = (newFilters: FilterType[]) => {
-    setFilters(newFilters);
-    setPagination({ pageIndex: 0, pageSize }); // Reset pagination
-
-    const filteredData = staticData.filter((item) => {
-      return newFilters.every((filter) => {
-        const value = item[filter.field as keyof typeof item];
-        switch (filter.operator) {
-          case "contains":
-            return String(value).toLowerCase().includes(filter.value.toLowerCase());
-          case "equals":
-            return String(value).toLowerCase() === filter.value.toLowerCase();
-          case "startsWith":
-            return String(value).toLowerCase().startsWith(filter.value.toLowerCase());
-          case "endsWith":
-            return String(value).toLowerCase().endsWith(filter.value.toLowerCase());
-          case "before":
-            return new Date(value as string) < new Date(filter.value);
-          case "after":
-            return new Date(value as string) > new Date(filter.value);
-          default:
-            return true;
-        }
-      });
-    });
-
-    setTableData(filteredData);
+    }
   };
+
+  fetchData();
+}, []);
+
+
+const handleFiltersChange = (newFilters: FilterType[]) => {
+  setFilters(newFilters);
+  setPagination({ pageIndex: 0, pageSize });
+
+  const filteredData = tableData.filter((item) => {
+    return newFilters.every((filter) => {
+      const value = item[filter.field as keyof typeof item];
+      switch (filter.operator) {
+        case "contains":
+          return String(value).toLowerCase().includes(filter.value.toLowerCase());
+        case "equals":
+          return String(value).toLowerCase() === filter.value.toLowerCase();
+        case "startsWith":
+          return String(value).toLowerCase().startsWith(filter.value.toLowerCase());
+        case "endsWith":
+          return String(value).toLowerCase().endsWith(filter.value.toLowerCase());
+        case "before":
+          return new Date(value as string) < new Date(filter.value);
+        case "after":
+          return new Date(value as string) > new Date(filter.value);
+        default:
+          return true;
+      }
+    });
+  });
+
+  setTableData(filteredData);
+};
 
   // Table data and columns
   const table = useReactTable({

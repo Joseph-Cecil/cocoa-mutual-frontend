@@ -3,23 +3,27 @@ import {DatabaseSchema} from "../../../types/report"
 
 export const columns: ColumnDef<DatabaseSchema>[] = [
     {
-        accessorKey: "type",
-        header: "Type",
+        accessorKey: "date",
+        header: "Date",
     },
     {
         accessorKey: "description",
         header: "Description",
     },
     {
-        accessorKey: "amount",
-        header: "Amount",
+        accessorKey: "monthly",
+        header: "Monthly Contribution",
     },
     {
-        accessorKey: "date",
-        header: "Date",
-        cell: ({row}) => {
-            const date = new Date(row.getValue("date"))
-            return <div>{date.toLocaleDateString()}</div>
-        },
+        accessorKey: "interestPaid",
+        header: "Interest Paid",
+    },
+    {
+        accessorKey: "withdrawal",
+        header: "Withdrawal",
+    },
+    {
+        accessorKey: "balanceAfterInterest",
+        header: "Balance"
     },
 ]

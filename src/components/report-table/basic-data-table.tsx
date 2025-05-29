@@ -61,7 +61,7 @@ const BasicDataTable = forwardRef<HTMLTableElement, ReusableTableProps<any>>(
                   <TableCell colSpan={table.getAllColumns().length} className="h-24 text-center">
                     Keine Ergebnisse
                   </TableCell>
-                </TableRow>
+                </TableRow>   
               )}
             </TableBody>
           </Table>

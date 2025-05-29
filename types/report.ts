@@ -1,9 +1,10 @@
-export type DatabaseSchema = {
-    id: string; // Unique identifier
-    userId: string; // User ID for the activity
-    type: 'loan' | 'contribution' | 'payment'; // Activity type
-    description: string; // Activity description
-    amount: number; // Amount involved
-    date: string; // Date of the activity
-  };
-  
+export interface DatabaseSchema {
+  id: string;
+  userId: string;
+  date: string;
+  description: string;
+  monthly: number;
+  interestPaid: number;
+  withdrawal: number;
+  balanceAfterInterest: number;
+}

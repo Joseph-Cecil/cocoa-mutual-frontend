@@ -1,125 +1,42 @@
 import { DatabaseSchema } from "types/report";
 
-export const staticData: DatabaseSchema[] = [
-    {
-      id: '1',
-      userId: 'user1',
-      type: 'loan',
-      description: 'Took a personal loan',
-      amount: 5000,
-      date: '2025-01-01',
-    },
-    {
-      id: '2',
-      userId: 'user1',
-      type: 'payment',
-      description: 'Paid loan installment',
-      amount: 1000,
-      date: '2025-01-05',
-    },
-    {
-      id: '3',
-      userId: 'user1',
-      type: 'contribution',
-      description: 'Added to monthly savings',
-      amount: 200,
-      date: '2025-01-10',
-    },
-    {
-      id: '4',
-      userId: 'user2',
-      type: 'loan',
-      description: 'Took a business loan',
-      amount: 10000,
-      date: '2025-01-15',
-    },
-    {
-      id: '5',
-      userId: 'user2',
-      type: 'payment',
-      description: 'Paid partial loan installment',
-      amount: 3000,
-      date: '2025-01-20',
-    },
-    {
-        id: '6',
-        userId: 'user1',
-        type: 'loan',
-        description: 'Took a personal loan',
-        amount: 5000,
-        date: '2025-01-01',
-      },
-      {
-        id: '7',
-        userId: 'user1',
-        type: 'payment',
-        description: 'Paid loan installment',
-        amount: 1000,
-        date: '2025-01-05',
-      },
-      {
-        id: '8',
-        userId: 'user1',
-        type: 'contribution',
-        description: 'Added to monthly savings',
-        amount: 200,
-        date: '2025-01-10',
-      },
-      {
-        id: '9',
-        userId: 'user2',
-        type: 'loan',
-        description: 'Took a business loan',
-        amount: 10000,
-        date: '2025-01-15',
-      },
-      {
-        id: '10',
-        userId: 'user2',
-        type: 'payment',
-        description: 'Paid partial loan installment',
-        amount: 3000,
-        date: '2025-01-20',
-      },
-      {
-        id: '11',
-        userId: 'user1',
-        type: 'loan',
-        description: 'Took a personal loan',
-        amount: 5000,
-        date: '2025-01-01',
-      },
-      {
-        id: '12',
-        userId: 'user1',
-        type: 'payment',
-        description: 'Paid loan installment',
-        amount: 1000,
-        date: '2025-01-05',
-      },
-      {
-        id: '13',
-        userId: 'user1',
-        type: 'contribution',
-        description: 'Added to monthly savings',
-        amount: 200,
-        date: '2025-01-10',
-      },
-      {
-        id: '14',
-        userId: 'user2',
-        type: 'loan',
-        description: 'Took a business loan',
-        amount: 10000,
-        date: '2025-01-15',
-      },
-      {
-        id: '15',
-        userId: 'user2',
-        type: 'payment',
-        description: 'Paid partial loan installment',
-        amount: 3000,
-        date: '2025-01-20',
-      },
-  ];
-  
+// Mapping of month names to proper date format (for the 'date' field)
+const monthMap: Record<string, string> = {
+  Jan: "01",
+  Feb: "02",
+  Mar: "03",
+  Apr: "04",
+  May: "05",
+  Jun: "06",
+  Jul: "07",
+  Aug: "08",
+  Sep: "09",
+  Oct: "10",
+  Nov: "11",
+  Dec: "12",
+};
+
+export function transformApiDataToTableRows(apiData: any): DatabaseSchema[] {
+  const rows: DatabaseSchema[] = [];
+
+  const { staffId, monthly, interestPaid, withdrawal, balanceAfterInterest, year } = apiData;
+
+  if (!monthly || typeof monthly !== "object") return [];
+
+  Object.entries(monthly).forEach(([month, amount], index) => {
+    if (monthMap[month] && typeof amount === "number") {
+      rows.push({
+        id: `${staffId}-${month}`,
+        userId: String(staffId),
+        date: `${year}-${monthMap[month]}-01`, // e.g., "2024-03-01"
+        description: `Monthly contribution for ${month}`,
+        monthly: amount,
+        interestPaid: index === 11 ? interestPaid ?? 0 : 0, // Show interest on last row
+        withdrawal: index === 11 ? withdrawal ?? 0 : 0, // Show withdrawal on last row
+        balanceAfterInterest: index === 11 ? balanceAfterInterest ?? 0 : 0, // Show final balance once
+      });
+    }
+  });
+
+  return rows;
+}

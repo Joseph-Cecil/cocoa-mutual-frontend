@@ -17,11 +17,14 @@ export type FilterType = {
 }
 
 const filterFields = [
-    {value: "type", label: "Type", icon: User},
-    {value: "description", label: "Description", icon: Building},
-    {value: "amount", label: "Amount", icon: User},
-    {value: "date", label: "Date", icon: CalendarIcon},
-]
+  { value: "date", label: "Date", icon: CalendarIcon },
+  { value: "description", label: "Description", icon: Building },
+  { value: "monthly", label: "Monthly Contribution", icon: User },
+  { value: "interestPaid", label: "Interest Paid", icon: User },
+  { value: "withdrawal", label: "Withdrawal", icon: User },
+  { value: "balanceAfterInterest", label: "Balance", icon: User },
+];
+
 
 const operatorOptions = {
     default: [
@@ -49,10 +52,10 @@ export default function DataTableSearch({
     const [filters, setFilters] = useState<FilterType[]>([])
     const [open, setOpen] = useState(false)
     const [currentFilter, setCurrentFilter] = useState<Omit<FilterType, 'id'>>({
-        field: "name",
-        operator: "equals",
-        value: "",
-    })
+    field: "description",
+    operator: "equals",
+    value: "",
+});
     const [date, setDate] = useState<Date>()
 
     const handleAddFilter = () => {
@@ -151,7 +154,7 @@ export default function DataTableSearch({
                                         <Calendar
                                             mode="single"
                                             selected={date}
-                                            onSelect={(newDate) => {
+                                            onSelect={(newDate: Date | undefined) => {
                                                 setDate(newDate)
                                                 setCurrentFilter({
                                                     ...currentFilter,

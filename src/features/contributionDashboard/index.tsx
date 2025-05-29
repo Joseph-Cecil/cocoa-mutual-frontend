@@ -15,7 +15,9 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export function ContributionDashboard() {interface Contribution {
+export function ContributionDashboard() {
+  
+  interface Contribution {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [x: string]: any;
   staffId: string;
@@ -77,6 +79,7 @@ function SkeletonLoader() {
     const fetchData = async () => {
       try {
         const data = await getStaffData();
+        console.log("Contribution", data)
         setContributions(data);
         // eslint-disable-next-line no-console
         console.log("Fetched staff data:", data);

@@ -37,9 +37,6 @@ export default function Dashboard() {
     const fetchData = async () => {
       try {
         const data = await fetchStaffData();
-
-        console.log(data)
-
         if (data) {
           const total = data.total;
           setTotal(total);
@@ -53,18 +50,6 @@ export default function Dashboard() {
       }
     };
 
-    // Fetch the interest rate
-    // const fetchInterestRate = async () => {
-    //   try {
-    //     const interestData = await getInterest(); // Fetch interest rate
-    //     if (interestData && interestData.interest) {
-    //       setInterestPaid(); // Update state
-    //     }
-    //   } catch (error) {
-    //     console.error('Error fetching interest rate:', error);
-    //   }
-    // };
-
     const fetchProfile = async () => {
       try {
         const profile = await fetchUserProfile();
@@ -77,7 +62,6 @@ export default function Dashboard() {
     };
     fetchProfile();
     fetchData();
-    // fetchInterestRate(); // Fetch interest rate on mount
   }, []);
 
   return (
@@ -134,7 +118,7 @@ export default function Dashboard() {
               
               <Card>
                 <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                  <CardTitle className='text-sm font-medium'># Balance Brought Forward</CardTitle>
+                  <CardTitle className='text-sm font-medium'># Bal. Brought Forward</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className='text-2xl font-bold'>₵{carryForwardBalance.toFixed(2)}</div>

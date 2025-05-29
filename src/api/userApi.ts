@@ -10,6 +10,7 @@ export const fetchUserProfile = async () => {
 export const fetchStaffData = async () => {
     try {
         const response = await apiClient.get("http://localhost:5000/api/user/staff-data");
+        console.log(response.data);
         return response.data;
     } catch (error) {
         // eslint-disable-next-line no-console
