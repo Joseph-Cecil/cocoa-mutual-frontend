@@ -1,11 +1,15 @@
 import { useState, useEffect, useRef } from "react";
-import { getCoreRowModel, getPaginationRowModel, PaginationState, useReactTable } from "@tanstack/react-table";
+import {
+  getCoreRowModel,
+  getPaginationRowModel,
+  PaginationState,
+  useReactTable,
+} from "@tanstack/react-table";
 import DataTableSearch, { FilterType } from "./data-table-search";
 import { BasicDataTable } from "./basic-data-table";
-import { getStaffData } from "../../api/adminApi";
+import { fetchStaffData } from "@/api/userApi";
 import { columns } from "./columns";
 import { DatabaseSchema } from "types/report";
-import { fetchStaffData } from "@/api/userApi";
 
 const monthMap: Record<string, string> = {
   Jan: "01",
@@ -34,11 +38,13 @@ function transformApiDataToTableRows(apiData: any): DatabaseSchema[] {
 
   if (!monthly || typeof monthly !== "object") return [];
 
+  
+
   return Object.entries(monthly).map(([month, amount], index) => ({
     id: `${staffId}-${month}`,
     userId: String(staffId),
     date: `${year}-${monthMap[month] ?? "01"}-01`,
-    description: `Monthly contribution for ${month}`,
+    description: `Contribution for ${month}`,
     monthly: typeof amount === "number" ? amount : 0,
     interestPaid: index === 11 ? interestPaid ?? 0 : 0,
     withdrawal: index === 11 ? withdrawal ?? 0 : 0,
@@ -49,67 +55,69 @@ function transformApiDataToTableRows(apiData: any): DatabaseSchema[] {
 export function DataTable() {
   const [tableData, setTableData] = useState<DatabaseSchema[]>([]);
   const [rowCount, setRowCount] = useState(0);
-  const [isLoading, setIsLoading] = useState(false); // Loading state for future enhancements
+  const [isLoading, setIsLoading] = useState(false);
+  const [staffName, setStaffName] = useState<string | null>(null);
+  const [staffId, setStaffId] = useState<string | null>(null);
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
   });
   const [filters, setFilters] = useState<FilterType[]>([]);
 
-  // Ref to access the table's print functionality
   const printRef = useRef<HTMLTableElement>(null);
 
-useEffect(() => {
-  const fetchData = async () => {
-    setIsLoading(true);
-    try {
-      const data = await fetchStaffData(); // your actual API call
-      const transformedData = transformApiDataToTableRows(data);
-      setTableData(transformedData);
-      setRowCount(transformedData.length);
-    } catch (error) {
-      console.error("Failed to fetch staff data:", error);
-    } finally {
-      setIsLoading(false);
-    }
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const data = await fetchStaffData(); // API call
+        const transformedData = transformApiDataToTableRows(data);
+        setTableData(transformedData);
+        setRowCount(transformedData.length);
+
+        setStaffName(data.name || null);
+        setStaffId(String(data.staffId) || null);
+      } catch (error) {
+        console.error("Failed to fetch staff data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleFiltersChange = (newFilters: FilterType[]) => {
+    setFilters(newFilters);
+    setPagination({ pageIndex: 0, pageSize });
+
+    const filteredData = tableData.filter((item) => {
+      return newFilters.every((filter) => {
+        const value = item[filter.field as keyof typeof item];
+        switch (filter.operator) {
+          case "contains":
+            return String(value).toLowerCase().includes(filter.value.toLowerCase());
+          case "equals":
+            return String(value).toLowerCase() === filter.value.toLowerCase();
+          case "startsWith":
+            return String(value).toLowerCase().startsWith(filter.value.toLowerCase());
+          case "endsWith":
+            return String(value).toLowerCase().endsWith(filter.value.toLowerCase());
+          case "before":
+            return new Date(value as string) < new Date(filter.value);
+          case "after":
+            return new Date(value as string) > new Date(filter.value);
+          default:
+            return true;
+        }
+      });
+    });
+
+    setTableData(filteredData);
   };
 
-  fetchData();
-}, []);
-
-
-const handleFiltersChange = (newFilters: FilterType[]) => {
-  setFilters(newFilters);
-  setPagination({ pageIndex: 0, pageSize });
-
-  const filteredData = tableData.filter((item) => {
-    return newFilters.every((filter) => {
-      const value = item[filter.field as keyof typeof item];
-      switch (filter.operator) {
-        case "contains":
-          return String(value).toLowerCase().includes(filter.value.toLowerCase());
-        case "equals":
-          return String(value).toLowerCase() === filter.value.toLowerCase();
-        case "startsWith":
-          return String(value).toLowerCase().startsWith(filter.value.toLowerCase());
-        case "endsWith":
-          return String(value).toLowerCase().endsWith(filter.value.toLowerCase());
-        case "before":
-          return new Date(value as string) < new Date(filter.value);
-        case "after":
-          return new Date(value as string) > new Date(filter.value);
-        default:
-          return true;
-      }
-    });
-  });
-
-  setTableData(filteredData);
-};
-
-  // Table data and columns
   const table = useReactTable({
-    data: tableData.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize), // Paginate the filtered data
+    data: tableData.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize),
     columns,
     pageCount: Math.ceil(rowCount / pageSize),
     state: {
@@ -124,7 +132,6 @@ const handleFiltersChange = (newFilters: FilterType[]) => {
     manualFiltering: true,
   });
 
-  // Print function to be called from the DataTableSearch
   const handlePrint = () => {
     if (printRef.current) {
       const printWindow = window.open("", "_blank");
@@ -145,9 +152,25 @@ const handleFiltersChange = (newFilters: FilterType[]) => {
         </html>
       `);
       printWindow?.document.close();
-      printWindow?.print(); // Trigger the print dialog
+      printWindow?.print();
     }
   };
+
+  const totals = tableData.reduce(
+    (acc, row) => {
+      acc.monthly += row.monthly || 0;
+      acc.interestPaid += row.interestPaid || 0;
+      acc.withdrawal += row.withdrawal || 0;
+      acc.balanceAfterInterest = row.balanceAfterInterest || acc.balanceAfterInterest;
+      return acc;
+    },
+    {
+      monthly: 0,
+      interestPaid: 0,
+      withdrawal: 0,
+      balanceAfterInterest: 0,
+    }
+  );
 
   return (
     <div>
@@ -156,7 +179,7 @@ const handleFiltersChange = (newFilters: FilterType[]) => {
           <div className="py-1 mt-1">
             <h1 className="text-3xl font-semibold">Report Table</h1>
             <div className="flex justify-between items-center">
-              <div className="flex items-center space-x-2"></div>
+              <div className="flex items-center space-x-2" />
               <div className="flex items-center space-x-2">
                 <DataTableSearch onFiltersChange={handleFiltersChange} onPrint={handlePrint} />
               </div>
@@ -164,8 +187,32 @@ const handleFiltersChange = (newFilters: FilterType[]) => {
           </div>
         </div>
       </div>
-      <div className="container mx-auto py-10">
-        <BasicDataTable table={table} isLoading={isLoading} showPagination={true} ref={printRef} />
+
+      <div className="container mx-auto py-10 space-y-6">
+        {/* Staff Info */}
+        {staffId && staffName && (
+          <div className="text-lg font-semibold">
+            Staff ID: {staffId} — Name: {staffName}
+          </div>
+        )}
+
+        {/* Table */}
+        <BasicDataTable
+          table={table}
+          isLoading={isLoading}
+          showPagination={true}
+          ref={printRef}
+        />
+
+        {/* Totals */}
+        {tableData.length > 0 && (
+          <div className="mt-6 p-4 bg-gray-50 rounded border text-sm text-gray-800">
+            <p><strong>Total Monthly Contributions:</strong> GH¢ {totals.monthly.toFixed(2)}</p>
+            <p><strong>Total Interest Paid:</strong> GH¢ {totals.interestPaid.toFixed(2)}</p>
+            <p><strong>Total Withdrawn:</strong> GH¢ {totals.withdrawal.toFixed(2)}</p>
+            <p><strong>Final Balance After Interest:</strong> GH¢ {totals.balanceAfterInterest.toFixed(2)}</p>
+          </div>
+        )}
       </div>
     </div>
   );
