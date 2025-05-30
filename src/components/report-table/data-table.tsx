@@ -10,6 +10,7 @@ import { BasicDataTable } from "./basic-data-table";
 import { fetchStaffData } from "@/api/userApi";
 import { columns } from "./columns";
 import { DatabaseSchema } from "types/report";
+import { formatCurrency } from "@/utils/formatCurrency";
 
 const monthMap: Record<string, string> = {
   Jan: "01",
@@ -212,10 +213,11 @@ const handlePrint = () => {
         {/* Totals */}
         {tableData.length > 0 && (
           <div className="mt-6 p-4 bg-gray-50 rounded border text-sm text-gray-800">
-            <p><strong>Total Monthly Contributions:</strong> GH¢ {totals.monthly.toFixed(2)}</p>
-            <p><strong>Total Interest Paid:</strong> GH¢ {totals.interestPaid.toFixed(2)}</p>
-            <p><strong>Total Withdrawn:</strong> GH¢ {totals.withdrawal.toFixed(2)}</p>
-            <p><strong>Final Balance After Interest:</strong> GH¢ {totals.balanceAfterInterest.toFixed(2)}</p>
+<p><strong>Total Monthly Contributions:</strong> {formatCurrency(totals.monthly)}</p>
+<p><strong>Total Interest Paid:</strong> {formatCurrency(totals.interestPaid)}</p>
+<p><strong>Total Withdrawn:</strong> {formatCurrency(totals.withdrawal)}</p>
+<p><strong>Final Balance After Interest:</strong> {formatCurrency(totals.balanceAfterInterest)}</p>
+
           </div>
         )}
       </div>
