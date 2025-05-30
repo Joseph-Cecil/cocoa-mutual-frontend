@@ -66,7 +66,12 @@ const BasicDataTable = forwardRef<HTMLTableElement, ReusableTableProps<any>>(
             </TableBody>
           </Table>
 
-          {showPagination && <DataTablePagination table={table} />}
+         {showPagination && (
+  <div className="no-print">
+    <DataTablePagination table={table} />
+  </div>
+)}
+
         </div>
       </div>
     );

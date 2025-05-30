@@ -132,29 +132,35 @@ export function DataTable() {
     manualFiltering: true,
   });
 
-  const handlePrint = () => {
-    if (printRef.current) {
-      const printWindow = window.open("", "_blank");
-      printWindow?.document.write(`
-        <html>
-          <head>
-            <style>
-              body { font-family: Arial, sans-serif; }
-              table { width: 100%; border-collapse: collapse; }
-              th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-              th { background-color: #f2f2f2; }
-            </style>
-          </head>
-          <body>
-            <h2>Print Report</h2>
-            ${printRef.current.outerHTML}
-          </body>
-        </html>
-      `);
-      printWindow?.document.close();
-      printWindow?.print();
-    }
-  };
+const handlePrint = () => {
+  if (printRef.current) {
+    const printWindow = window.open("", "_blank");
+    printWindow?.document.write(`
+      <html>
+        <head>
+          <title>Print Report</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 20px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+            th { background-color: #f2f2f2; }
+            .totals p { margin: 4px 0; }
+
+            /* Hide elements with class "no-print" during printing */
+            .no-print { display: none !important; }
+          </style>
+        </head>
+        <body>
+          <h2>Contribution Report</h2>
+          ${printRef.current.innerHTML}
+        </body>
+      </html>
+    `);
+    printWindow?.document.close();
+    printWindow?.print();
+  }
+};
+
 
   const totals = tableData.reduce(
     (acc, row) => {
@@ -188,7 +194,7 @@ export function DataTable() {
         </div>
       </div>
 
-      <div className="container mx-auto py-10 space-y-6">
+      <div className="container mx-auto py-10 space-y-6" ref={printRef}>
         {/* Staff Info */}
         {staffId && staffName && (
           <div className="text-lg font-semibold">
@@ -201,7 +207,6 @@ export function DataTable() {
           table={table}
           isLoading={isLoading}
           showPagination={true}
-          ref={printRef}
         />
 
         {/* Totals */}

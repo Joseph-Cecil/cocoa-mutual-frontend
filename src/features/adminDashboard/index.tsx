@@ -2,10 +2,7 @@
 /* eslint-disable no-console */
 import { useState, useEffect } from 'react'
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
+  Card
 } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Header } from '@/components/layout/header'
